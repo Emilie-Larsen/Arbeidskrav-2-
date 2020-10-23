@@ -1,0 +1,152 @@
+
+### Arbediskrav 2 Infernce ##
+
+## My skript ##
+
+### Beskrivelse av oppgaven ###
+
+## Ut i fra studien til .... skal vi plukke ut en variabel vi ønsker å teste 
+## om det er en i blant høy og lav responderende ###
+
+## Hypotensene : Higt gruppen har vi forventer at highruppen får høyere testo enn low gruppen 
+
+library(tidyverse)
+library(readr)
+
+
+#### Load in data set
+
+download.file("https://ndownloader.figstatic.com/files/14702420", destfile = "./data/hypertrophy.csv")
+
+hypertrophy <- read_csv("./data/hypertrophy.csv")
+
+
+
+### Variables of interest
+
+var_interest <- c("CLUSTER", "T3T1__TESTOSTERONE_ngdl")
+
+### rename to Testosterone (testo)
+
+testo <- hypertrophy 
+
+
+### get rid of NA
+
+var <- c("T3T1__TESTOSTERONE_ngdl", NA)
+
+### filtrer ut NA fra CLUSTER
+
+testo1 <- testo %>%
+  select(all_of(var_interest)) %>%
+  filter(!is.na(CLUSTER)) %>%
+  print()
+
+### finne mean for de to gruppene
+
+testo1 %>%
+  group_by(CLUSTER) %>%
+  summarise(testosterone.m = mean(T3T1__TESTOSTERONE_ngdl))
+print()
+### kjøre t-test
+
+t.test(T3T1__TESTOSTERONE_ngdl ~ CLUSTER, paired = FALSE, data = testo1)
+
+
+high <- testo[testo$CLUSTER == "HIGH", ]$T3T1_PERCENT_CHANGE_TESTOSTERONE_ngdl
+
+low <- testo[testo$CLUSTER == "LOW", ]$T3T1_PERCENT_CHANGE_TESTOSTERONE_ngdl
+
+t1_high <- testo[testo$CLUSTER == "HIGH",]$T1_TESTOSTERONE_ngdl
+
+
+testo2 <- testo1 %>%
+  filter(!is.na(T3T1__TESTOSTERONE_ngdl))  
+
+### kjøre t-test
+
+t.test(T3T1__TESTOSTERONE_ngdl ~ CLUSTER, paired = FALSE, data = testo1)
+
+### lage en ny variabel som inneholder verdiene fra HIGH- gruppa i T3-T1
+
+high1 <- testo2[testo2$CLUSTER == "HIGH", ]$T3T1__TESTOSTERONE_ngdl
+
+low1 <- testo2[testo2$CLUSTER == "LOW", ]$T3T1__TESTOSTERONE_ngdl
+
+### regne ut gjennomsnittet i HIGH og LOW- gruppa
+mean_high <- mean(high1)
+mean_low <- mean(low1)
+
+## Finne diffransen mellom gjennomsnittet i HIGH og LOW - gruppa
+mean(mean_high - mean_low)
+
+
+
+### finne p-verdi // Box plott 
+
+testo2 %>%
+  ggplot(aes(CLUSTER, T3T1__TESTOSTERONE_ngdl, fill="CLUSTER" )) + geom_boxplot() + 
+  labs(fill= "CLUSTER")
+
+## Notater fra timen: 
+### Husk å rydde opp i dok. print og slike ting
+
+## Parred t test 
+
+t.test(dat1$Veridene, dat1$Verdiene, 
+       paired = TRUE) # dat1 er den man lager dataen i så sjekke med egen 
+
+dat1 %>% 
+  pivot_longer(names_to = f"ibertype",
+               values_to = "csa",
+               cols = Fast_csa1) %>%
+  mutate(fibertype = gsub("Csa_T1","",fibertype)) %<% # for å få vekk csa og kun slow og fast 
+
+  Grope_by(fibertype) %<% 
+  summarise( m = mean (csa,na.rm = TRUE)) %>% 
+  
+  ggplot(aes(fibertype, m)) + ()
+
+## P verdi sier at om 0 hyoptesen er sann hvor sannsynelig er det å se den forksjellen vi ser her 
+## er en større forskjell eller en forksjell  
+
+# Forsøker å si noe om polilasjone og si noe om de vi ikke kan si noe mom 
+# Gjennom et gjennomsnitt eller standar avik 
+## Baskerrt på denne dataen trekker vi konklusjoner på at det er sånn 
+## Konklujone mellom 
+
+
+## Jeg vil forlkarer testo basert på gruppe og setter forlmere i t test 
+
+# Higt grupper har øket 6,9 mens low har gått ned 
+## hadde vi gått med på flere studier 
+##Null hypotense står ganske strekr t, ingen div melllom forandringeen i gruppene 
+##P verdien sier at null hyopstesen er samm er vår data veldig sannsyneldig 
+## P verdien tester alltdi mot nullhypotene 
+## 50 % er lik vår data eller mere kestrem om null hypo er sann 
+
+## HVorfor er testo viktig? er test invlovert i muskelveksst eller er den gruppen 
+## øker har mere testo enn den andre gruppen 
+
+## Endre rekkefølge på low og high også 
+
+
+                    
+
+
+
+
+
+  
+
+
+
+    
+
+
+
+
+
+
+ 
+
