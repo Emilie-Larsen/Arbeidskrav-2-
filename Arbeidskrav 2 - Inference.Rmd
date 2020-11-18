@@ -2,6 +2,9 @@
 title: "Arbeidskrav 2 uke 43- Inference"
 output: html_document
 author: "Emilie S. Larsen"
+bibliography: references.bib
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -9,18 +12,25 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Innledning: 
-#### I Haun et al, 2019 sin studie forsket de på muskelfibertype og bestemmelse av fibertype sammensettnighos tidligere trente unge menn. I studien deltok 30 unge menn i 6 ukers styrketrening med høyt volum. De ble delt inn i to grupper HIGH og LOW  bestemt av hypertrofi-score, av prøver som ble tatt før intervensjonen. I denne oppgaven skal vi se på endring av testosteron nivå i begge gruppene. Tidligere studier har funnet sammenheng med langsiktig muskelhypertrofi og økte mengder med testosteron(Fink J, Schoenfeld BJ, Nakazato K, 2018). I studen til Magine et al (2017) viste deres største funn at den endokrine responsen på styrketrening og spesielt testosteron er relatert til muskelhypertrofi over 8 ukers trening. Noe som tidligere bare var en sterk korrelasjon i andre studier. 
+<!-- References are updarted in a .bib file --> 
+I Haun et al. [-@Haun2019] sin studie forsket de på muskelfibertype og bestemmelse av fibertype sammensettnighos tidligere trente unge menn. I studien deltok 30 unge menn i 6 ukers styrketrening med høyt volum. De ble delt inn i to grupper HIGH og LOW  bestemt av hypertrofi-score, av prøver som ble tatt før intervensjonen. I denne oppgaven skal vi se på endring av testosteron nivå i begge gruppene. Tidligere studier har funnet sammenheng med langsiktig muskelhypertrofi og økte mengder med testosteron [@Fink2018]. I studen til Magine et al. [@Mangine2017] viste deres største funn at den endokrine responsen på styrketrening og spesielt testosteron er relatert til muskelhypertrofi over 8 ukers trening. Noe som tidligere bare var en sterk korrelasjon i andre studier. 
 
 
 
 ### Hypotese: 
+<!-- Removing all headlines ##### from text -->
+Vi forventer at HIGH gruppen får en større økning i testosteron enn det LOW gruppen vil få. <!--Jeg tror at hvis prosentandelen i forskjell mellom high and lowresponders er stor nok, så er nok svaret .--> Stor nok vil si at jeg setter pverdien til 0.005.
+<!-- Remember that the p-value is the rule for you to decide if you have enough evidence against the null hypothesis or not -->
 
-#### Vi forventer at HIGH gruppen får en større økning i testosteron enn det LOW gruppen vil få. Jeg tror at hvis prosentandelen i forskjell mellom high and lowresponders er stor nok,så er nok svaret reliabelt. Stor nok vil si at jeg setter pverdien til 0,005.  
-
-```{r echo=FALSE, message=FALSE, warning=FALSE, Echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 library(tidyverse)
-library(readr)
+# library(readr) # already included in tidyverse
+
+# need to doanload data set first
+download.file(url = "https://ndownloader.figstatic.com/files/14702420", 
+              destfile = "./hypertrophy.csv")  # Laster ned datafilen.
+
 
 
 #### Load in data set
@@ -30,7 +40,7 @@ hypertrophy <- read_csv("./hypertrophy.csv")
 ```
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, Echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 ### Variables of interest
 var_interest <- c("CLUSTER", "T3T1__TESTOSTERONE_ngdl")
@@ -55,18 +65,20 @@ testo1 <- testo %>%
 
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, Echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ### finne mean for de to gruppene
 
 testo1 %>%
   group_by(CLUSTER) %>%
-  summarise(testosterone.m = mean(T3T1__TESTOSTERONE_ngdl))
+  summarise(testosterone.m = mean(T3T1__TESTOSTERONE_ngdl, na.rm = TRUE))
+
+# add na.rm = TRUE as we have missing values
   
 ```
 
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, Echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ### kjøre t-test
 
 test <- t.test(T3T1__TESTOSTERONE_ngdl ~ CLUSTER, paired = FALSE, data = testo1)
@@ -87,7 +99,7 @@ ciu <- round(test$conf.int[2], 1)
 
 ## Konklusjon: 
 
-#### Vi konkludere med at det ikke er noe forksjell i testo verdiene i HIGH gruppen i forhold til LOW gruppen  fra T1 til T3(mean difference, `r estimate`, 95% CI [`r cil`, `r ciu`]; t(`r df`) = `r t`, p = `r p`)
+Vi konkludere med at det ikke er noe forksjell i testo verdiene i HIGH gruppen i forhold til LOW gruppen  fra T1 til T3 (mean difference, `r estimate`, 95% CI [`r cil`, `r ciu`]; t(`r df`) = `r t`, p = `r p`)
 
  
 
@@ -108,7 +120,7 @@ high1 <- testo2[testo2$CLUSTER == "HIGH", ]$T3T1__TESTOSTERONE_ngdl
 ### Box plott 
 
 testo2 %>%
-  ggplot(aes(CLUSTER, T3T1__TESTOSTERONE_ngdl, fill="CLUSTER" )) + geom_boxplot() + 
+  ggplot(aes(CLUSTER, T3T1__TESTOSTERONE_ngdl, fill=CLUSTER )) + geom_boxplot() + 
   labs(fill= "CLUSTER")
   
    
@@ -123,9 +135,4 @@ testo2 %>%
 
 
 ### Referanser: 
-##### Haun, Cody T., Christopher G. Vann, C. Brooks Mobley, Shelby C. Osburn, Petey W. Mumford, Paul A. Roberson, Matthew A. Romero, et al. 2019. “Pre-Training Skeletal Muscle Fiber Size and Predominant Fiber Type Best Predict Hypertrophic Responses to 6 Weeks of Resistance Training in Previously Trained Young Men.” Journal Article. Frontiers in Physiology 10 (297). https://doi.org/10.3389/fphys.2019.00297.
-
-##### Fink J, Schoenfeld BJ, Nakazato K. The role of hormones in muscle hypertrophy. Phys Sportsmed. 2018 Feb;46(1):129-134. doi: 10.1080/00913847.2018.1406778. Epub 2017 Nov 25. PMID: 29172848.
-
-##### Mangine, Gerald T.1; Hoffman, Jay R.2; Gonzalez, Adam M.2; Townsend, Jeremy R.2; Wells, Adam J.2; Jajtner, Adam R.2; Beyer, Kyle S.2; Boone, Carleigh H.2; Wang, Ran2; Miramonti, Amelia A.2; LaMonica, Michael B.2; Fukuda, David H.2; Witta, E. Lea2; Ratamess, Nicholas A.3; Stout, Jeffrey R.2 Exercise-Induced Hormone Elevations Are Related to Muscle Growth, Journal of Strength and Conditioning Research: January 2017 - Volume 31 - Issue 1 - p 45-53 doi: 10.1519/JSC.0000000000001491
 
